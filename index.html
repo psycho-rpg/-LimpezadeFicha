@@ -69,19 +69,28 @@
         function gerarQRCodeUnico() {
             if (!codigoUsuario) {
                 codigoUsuario = Math.random().toString(36).substr(2, 8);
- localStorage.setItem("codigoUsuario", codigoUsuario); 
+                localStorage.setItem("codigoUsuario", codigoUsuario);
             }
-            document.getElementById("qrcode").innerHTML = "";
- novo código QRC (document.getElementByid("código"), codigoUsuário); 
-             iniciarLeitorQRCode(); 
-         } 
 
- função verificarCodigo(codigoEscaneado) { 
- if (codigoEscaneado === codigoUsuario) { 
- autenticacaoSucesso(); 
- } mais { 
- document.getElementById("resultado").innerText = "Código inválido!"; 
-             } 
+            console.log("Código gerado:", codigoUsuario);
+
+            let qrcodeDiv = document.getElementById("qrcode");
+            qrcodeDiv.innerHTML = ""; // Limpa QR Code anterior
+            new QRCode(qrcodeDiv, {
+                text: codigoUsuario,
+                width: 200,
+                height: 200
+            });
+
+            iniciarLeitorQRCode();
+        }
+
+        function verificarCodigo(codigoEscaneado) {
+            if (codigoEscaneado === codigoUsuario) {
+                autenticacaoSucesso();
+            } else {
+                document.getElementById("resultado").innerText = "Código inválido!";
+            }
         }
 
         function verificarCodigoManual() {
@@ -97,30 +106,30 @@
             leitorQRCode.stop();
 
             enviarParaDiscord();
-<! DOCTYPE html>
+        }
 
-<cabeça>
- <meta charset="UTF-8"> 
- <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-     <title>Autenticação QR Code</title> 
- <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></PLH0>> 
+        function enviarParaDiscord() {
+            fetch("https://discord.com/api/webhooks/1372577274695782491/M20z0IyuAKmYnlP3e-TU0F62sG_Ad6R4DPiCGQWEQY7SGzdFiPeTVtRfIY5IGaTph1bY", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: "✅ Autenticação via QR Code bem-sucedida!" })
             }).then(response => response.text())
-             .then(text => console.log("Resposta do servidor:", text)) 
-             .catch(error => console.error("Erro ao enviar mensagem ao Discord:", error)); 
-             font-family: Arial, sans-serif; 
+            .then(text => console.log("Resposta do servidor:", text))
+            .catch(error => console.error("Erro ao enviar mensagem ao Discord:", error));
+        }
 
         function iniciarLeitorQRCode() {
-             if (leitorQRCode) leitorQRCode.stop(); 
+            if (leitorQRCode) leitorQRCode.stop();
             leitorQRCode = new Html5Qrcode("reader");
-             leitorQRCode.start( 
+            leitorQRCode.start(
                 { facingMode: "environment" }, 
- { FPS: 10, QRbox: 250 }, 
- Margem: Auto; 
- (Mensagem de erro) => {} 
-             ); 
-         } 
+                { fps: 10, qrbox: 250 },
+                (decodedText) => verificarCodigo(decodedText),
+                (errorMessage) => {}
+            );
+        }
 
-         } 
- </script> 
-"Corpo"
+        gerarQRCodeUnico();
+    </script>
+</body>
 </html>
