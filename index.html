@@ -1,98 +1,113 @@
-  ![Imagem de apresentação](https://cdn.discordapp.com/attachments/1367840916211241002/1381598208710414447/image0.gif?ex=68481919&is=6846c799&hm=7d95eed40538d2f343ef3d198c4b729b04e36870d9a9b9d6948b7c506b7d397e&)
-
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autenticação QR Code Automática</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Limpeza de Ficha Criminal</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 650px;
+      background: #fff;
+      margin: auto;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    .icon {
+      font-size: 50px;
+      text-align: center;
+    }
+    h1 {
+      text-align: center;
+    }
+    label {
+      margin-top: 10px;
+      display: block;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .upload-button {
+      margin-top: 20px;
+      background: #2c3e50;
+      color: #fff;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
-    <h2>Escaneie o QR Code para autenticar</h2>
-    <div id="qrcode"></div>
-    <button onclick="gerarQRCode()">Gerar Novo QR Code</button>
-    <div id="reader" style="width: 300px;"></div>
-    <p id="resultado"></p>
-    <p id="contador" style="font-size: 20px; font-weight: bold; display: none;"></p>
+  <div class="container">
+    <div class="icon">⚖️</div>
+    <h1>Limpeza de Ficha Criminal</h1>
+    <form id="fichaForm">
+      <label>Nome do Cliente:</label>
+      <input type="text" id="cliente">
 
-    <script>
-        let codigosUsados = new Set();
-        let codigoAtual = "";
-        const webhookURL = "https://discord.com/api/webhooks/1372577274695782491/M20z0IyuAKmYnlP3e-TU0F62sG_Ad6R4DPiCGQWEQY7SGzdFiPeTVtRfIY5IGaTph1bY";
+      <label>RG do Cliente:</label>
+      <input type="text" id="rgCliente">
 
-        function gerarQRCode() {
-            let novoCodigo;
-            do {
-                novoCodigo = Math.random().toString(36).substr(2, 8);
-            } while (codigosUsados.has(novoCodigo));
+      <label>Nome do Advogado:</label>
+      <input type="text" id="advogado">
 
-            codigosUsados.add(novoCodigo);
-            codigoAtual = novoCodigo;
-            document.getElementById("qrcode").innerHTML = "";
-            document.getElementById("reader").style.display = "block";
-            new QRCode(document.getElementById("qrcode"), codigoAtual);
+      <label>RG do Advogado:</label>
+      <input type="text" id="rgAdvogado">
+
+      <label>Nome do Delegado:</label>
+      <input type="text" id="delegado">
+
+      <label>RG do Delegado:</label>
+      <input type="text" id="rgDelegado">
+
+      <label>Anexos:</label>
+      <input type="file" id="anexos" multiple>
+
+      <button class="upload-button" type="submit">📎 Enviar Requerimento</button>
+    </form>
+  </div>
+
+  <script>
+    const webhookURL = "https://discord.com/api/webhooks/1372577259700879392/u83yu7kVp_N9lQQ5bcLdZqY-In9bea2J-DfjZ8dv490jbeZKYX6pnndaKwIKGVUejJS8";
+    
+    document.getElementById("fichaForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const dados = {
+        content: "**Novo requerimento de limpeza de ficha criminal:**\n" +
+          "🔗 Cliente: " + document.getElementById("cliente").value + "\n" +
+          "🪪 RG do Cliente: " + document.getElementById("rgCliente").value + "\n" +
+          "⚖️ Advogado: " + document.getElementById("advogado").value + "\n" +
+          "⚖️ RG do Advogado: " + document.getElementById("rgAdvogado").value + "\n" +
+          "👮 Delegado: " + document.getElementById("delegado").value + "\n" +
+          "🪪 RG do Delegado: " + document.getElementById("rgDelegado").value
+      };
+
+      fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      }).then(response => {
+        if (response.ok) {
+          alert("Requerimento enviado com sucesso!");
+        } else {
+          alert("Erro ao enviar requerimento.");
         }
-
-        function enviarMensagemDiscord(mensagem) {
-            fetch(webhookURL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ content: mensagem })
-            }).then(response => {
-                if (response.ok) {
-                    console.log("Mensagem enviada ao Discord!");
-                } else {
-                    console.error("Erro ao enviar mensagem. Código de status:", response.status);
-                }
-            }).catch(error => {
-                console.error("Erro na requisição:", error);
-            });
-        }
-
-        function verificarCodigo(codigoEscaneado) {
-            if (codigoEscaneado === codigoAtual) {
-                document.getElementById("resultado").innerText = "✅ Autenticação bem-sucedida!";
-                document.getElementById("qrcode").style.display = "none";
-                document.getElementById("reader").style.display = "none";
-
-                enviarMensagemDiscord("✅ QR Code autenticado com sucesso!");
-
-                iniciarContagemRegressiva();
-            } else {
-                document.getElementById("resultado").innerText = "❌ Código inválido!";
-            }
-        }
-
-        function iniciarContagemRegressiva() {
-            let tempoRestante = 10;
-            const contadorElemento = document.getElementById("contador");
-            contadorElemento.style.display = "block";
-            contadorElemento.innerText = `Fechando em ${tempoRestante} segundos...`;
-
-            const intervalo = setInterval(() => {
-                tempoRestante--;
-                contadorElemento.innerText = `Fechando em ${tempoRestante} segundos...`;
-                if (tempoRestante === 0) {
-                    clearInterval(intervalo);
-                    window.close(); // Fecha a página
-                }
-            }, 1000);
-        }
-
-        function iniciarLeitorQRCode() {
-            const html5QrCode = new Html5Qrcode("reader");
-            html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: 250 },
-                (decodedText) => verificarCodigo(decodedText),
-                (errorMessage) => {}
-            );
-        }
-
-        gerarQRCode();
-        iniciarLeitorQRCode();
-    </script>
+      }).catch(error => {
+        console.error("Erro no envio:", error);
+        alert("Erro inesperado.");
+      });
+    });
+  </script>
 </body>
 </html>
