@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Limpeza de Ficha Criminal</title>
+  <meta name="copyright" content="wandas - Todos os direitos reservados">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!--
+    Copyright © wandas - Todos os direitos reservados.
+    Proibida a reprodução, cópia ou redistribuição sem autorização.
+  -->
+
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -46,7 +54,37 @@
       cursor: pointer;
       font-size: 16px;
     }
+    .mensagem {
+      margin-top: 20px;
+      background: #dff0d8;
+      border: 1px solid #c3e6cb;
+      padding: 15px;
+      border-radius: 6px;
+           color: #155724;
+    }
+    .descricao {
+      margin-top: 40px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #dcdcdc;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      line-height: 1.6;
+    }
   </style>
+
+  <script>
+    // Proteção contra cópia simples e inspeção
+    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.onkeydown = function(e) {
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && ["I", "J", "C", "U"].includes(e.key))
+      ) {
+        return false;
+      }
+    };
+  </script>
 </head>
 <body>
   <div class="container">
@@ -54,33 +92,49 @@
     <h1>Limpeza de Ficha Criminal</h1>
     <form id="fichaForm">
       <label>Nome do Cliente:</label>
-      <input type="text" id="cliente">
+      <input type="text" id="cliente" required>
 
       <label>RG do Cliente:</label>
-      <input type="text" id="rgCliente">
+      <input type="text" id="rgCliente" required>
 
       <label>Nome do Advogado:</label>
-      <input type="text" id="advogado">
+      <input type="text" id="advogado" required>
 
       <label>RG do Advogado:</label>
-      <input type="text" id="rgAdvogado">
+      <input type="text" id="rgAdvogado" required>
 
       <label>Nome do Delegado:</label>
-      <input type="text" id="delegado">
+      <input type="text" id="delegado" required>
 
       <label>RG do Delegado:</label>
-      <input type="text" id="rgDelegado">
+      <input type="text" id="rgDelegado" required>
 
       <label>Anexos:</label>
       <input type="file" id="anexos" multiple>
 
       <button class="upload-button" type="submit">📎 Enviar Requerimento</button>
     </form>
+    <div class="mensagem" id="mensagemSucesso">
+      ⚖️ A limpeza de ficha foi encaminhada ao sistema de limpeza de ficha da Polícia Militar do Estado do Rio de Janeiro.
+    </div>
+  </div>
+
+  <div class="descricao">
+    <h2>Sobre a Limpeza de Ficha Criminal e o Direito Militar</h2>
+    <p>
+      A <strong>limpeza de ficha criminal</strong> é um procedimento jurídico que busca remover registros criminais do histórico de um cidadão, quando permitido por lei. Ela pode ocorrer em casos de reabilitação, sentença absolutória ou após o cumprimento integral da pena com o decurso do prazo legal.
+    </p>
+    <p>
+      No contexto da <strong>Polícia Militar</strong>, esse processo é ainda mais relevante, pois uma ficha sem antecedentes é fundamental para ingresso, promoções ou permanência nos quadros da corporação. O procedimento respeita os princípios da legalidade e da dignidade da pessoa humana, resguardados tanto pela Constituição Federal quanto pelo Código Penal Militar.
+    </p>
+    <p>
+      Este sistema oferece uma forma segura, digital e ética de documentar solicitações formais de revisão ou expurgo de dados criminais, reforçando a transparência no âmbito da justiça e dos direitos do cidadão militar e civil.
+    </p>
   </div>
 
   <script>
-    const webhookURL = "https://discord.com/api/webhooks/1379953132242473022/hGP4ECOMRWZRBEZEZNVdTS8iTEJzqc4n7_kDsKZdQevFtKaygF2vm7lHhSN-bUsv6ga4"
-    
+    const webhookURL = "https://discord.com/api/webhooks/1379953132242473022/hGP4ECOMRWZRBEZEZNVdTS8iTEJzqc4n7_kDsKZdQevFtKaygF2vm7lHhSN-bUsv6ga4";
+
     document.getElementById("fichaForm").addEventListener("submit", function(event) {
       event.preventDefault();
       const dados = {
@@ -99,7 +153,9 @@
         body: JSON.stringify(dados)
       }).then(response => {
         if (response.ok) {
-          alert("Requerimento enviado com sucesso!");
+          document.getElementById("mensagemSucesso").style.display = "block";
+          document.querySelector(".upload-button").disabled = true;
+          document.getElementById("fichaForm").reset();
         } else {
           alert("Erro ao enviar requerimento.");
         }
